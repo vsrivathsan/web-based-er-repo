@@ -1,0 +1,6 @@
+TODO:
+1. Some title in the google product search can have special characters. Process/handle them.
+2. Check for the absence of Internet connection.
+3. Check if the keys are not valid.
+4. Handle multiple keywords in search string.
+5. IMP: check with "Jan" regarding Porter Stemmer.
