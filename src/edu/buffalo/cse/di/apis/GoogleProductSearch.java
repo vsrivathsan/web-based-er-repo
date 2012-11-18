@@ -102,7 +102,7 @@ public class GoogleProductSearch extends GoogleSearch {
             if(!line.equals("")) {
                 List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line);
                 for(GoogleProductSearchResult result : results) {
-                    nodes.add(new Node(result.getTitle()));
+                    nodes.add(new Node(result.getTitle(),null,null,null,null));
                 }
             }
         }
