@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -18,6 +20,7 @@ import net.sf.json.JSONSerializer;
 
 import edu.buffalo.cse.di.apis.entity.GoogleCustomSearchResult;
 import edu.buffalo.cse.di.util.GoogleAPIKey;
+import edu.buffalo.cse.di.util.SimilarityScore;
 
 /**
  * This class is used to search for a query against the google search, and get the appropriate content.
@@ -72,7 +75,8 @@ public class GoogleCustomSearch extends GoogleSearch {
             String title = item.getString("title");
             String link = item.getString("link");
             String snippet = item.getString("snippet");
-            GoogleCustomSearchResult result = new GoogleCustomSearchResult(title, link, snippet);
+            String heading = constructHeading(query, snippet);
+            GoogleCustomSearchResult result = new GoogleCustomSearchResult(title, link, snippet, heading);
             itemNames.add(result);
             //String title = 
             //System.out.println(item.get("product"));
@@ -81,6 +85,24 @@ public class GoogleCustomSearch extends GoogleSearch {
         return itemNames;
     }
     
+    public static String constructHeading(String epr, String snippet) {
+    	String heading = "";
+    	List<String> phraseList = Arrays.asList(snippet.split("[,.;:-]"));
+    	SimilarityScore simScore = new SimilarityScore();
+    	Iterator phraseListIter = phraseList.iterator();
+    	double highScore = 0;
+    	while (phraseListIter.hasNext()) {
+    		String phrase = (String)phraseListIter.next();
+    		double curScore = simScore.getJaccardSimilarty(epr, phrase);
+    		if (curScore > highScore) {
+    			highScore = curScore;
+    			heading = phrase;
+    		}
+    		else
+    			continue;
+    	}
+    	return heading;
+    }
     
     public static void main(String[] args) {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");

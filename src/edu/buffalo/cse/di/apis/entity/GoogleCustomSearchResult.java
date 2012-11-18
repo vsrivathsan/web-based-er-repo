@@ -10,11 +10,13 @@ public class GoogleCustomSearchResult {
     private final String title;
     private final String link;
     private final String snippet;
+    private final String heading;
     
-    public GoogleCustomSearchResult(String title, String link, String snippet) {
+    public GoogleCustomSearchResult(String title, String link, String snippet, String heading) {
         this.title = title;
         this.link = link;
         this.snippet = snippet;
+        this.heading = heading;
     }
 
     public String getTitle() {
@@ -29,10 +31,14 @@ public class GoogleCustomSearchResult {
         return snippet;
     }
 
-    @Override
+    public String getHeading() {
+		return heading;
+	}
+
+	@Override
     public String toString() {
         return "GoogleCustomSearchResult [title=" + title + ", link=" + link
-                + ", snippet=" + snippet + "]";
+                + ", heading=" + heading + ", snippet=" + snippet + "]";
     }
     
 }

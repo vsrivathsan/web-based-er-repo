@@ -61,19 +61,20 @@ public class SimilarityScore {
     }
     
     /**
-     * Given two list of strings as input return the SumSimilarityScore --- Used for determining the heading associated with the entity record ri
-     * @param docHeadList --- Heading of Top K Documents for the entity record ri
+     * Given two list of strings as input return the the string with Highest SumSimilarityScore --- Used for determining the heading associated with the entity record ri and also for heading of authority file
+     * @param headList --- Heading of Top K Documents for the entity record ri
      * @return
      */
-    public static List<Double> getSumSimilarity(List<String> docHeadList) {
-    	Iterator list1iter = docHeadList.iterator();
+    public static String getMaxSumSimilarity(List<String> headList) {
+    	Iterator list1iter = headList.iterator();
     	Iterator list2iter = null;
     	double sumSim = 0;
-    	List<Double> sumSimList = new ArrayList<Double>();
+    	String highSimScoreStr = "";
+    	double maxSim = 0;
     	while(list1iter.hasNext()) {
     		String str1 = (String)list1iter.next();
     		sumSim = 0;
-    		list2iter = docHeadList.iterator();
+    		list2iter = headList.iterator();
     		while(list2iter.hasNext()) {
     			String str2 = (String)list2iter.next();
     			if (str1.equals(str2))
@@ -83,9 +84,13 @@ public class SimilarityScore {
         			sumSim = sumSim + simH;
     			}
     		}
-    		sumSimList.add(sumSim);
+    		if (sumSim > maxSim) {
+    			maxSim = sumSim;
+    			highSimScoreStr = str1;
+    		} else
+    			continue;
     	}
-    	return sumSimList;
+    	return highSimScoreStr;
     }
     
     private static List<String> getTokens(String str) {
