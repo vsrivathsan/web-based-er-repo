@@ -31,10 +31,15 @@ public class SimilarityScore {
     public static double getJaccardSimilarty(String str1, String str2) {
         List<String> tokens1 = getTokens(str1);
         List<String> tokens2 = getTokens(str2);
+        
+        return getJaccardSimilartyForTokens(tokens1, tokens2);
+    }
+
+    public static double getJaccardSimilartyForTokens(List<String> tokens1, List<String> tokens2) {
         Set<String> set1 = new HashSet<String>();
         Set<String> set2 = new HashSet<String>();
         Set<String> union = new HashSet<String>();
-
+        
         set1.addAll(tokens1);
         set2.addAll(tokens2);
         union.addAll(set1);
@@ -95,6 +100,39 @@ public class SimilarityScore {
     
     private static List<String> getTokens(String str) {
         return Arrays.asList(str.toLowerCase().split("[; ,]"));
+    }
+    
+    public static double simScoreForTitles(List<String> titles1, List<String> titles2) {
+        return getJaccardSimilartyForTokens(titles1, titles2);
+    }
+
+    public static double simScoreForURLS(List<String> urls1, List<String> urls2, int urlThreshold) {
+        
+        if(urlThreshold <= 0) {
+            throw new IllegalArgumentException("Invalid urlThreshold value ( =" +urlThreshold + ")");
+        }
+        else if(urlThreshold < urls1.size() || urlThreshold < urls2.size()) {
+            throw new IllegalArgumentException("Required number of common URL's cannot be lesser" +
+            		"than size either url's list");
+        }
+        
+        Set<String> set1 = new HashSet<String>();
+        Set<String> set2 = new HashSet<String>();
+        Set<String> union = new HashSet<String>();
+        
+        set1.addAll(urls1);
+        set2.addAll(urls2);
+        union.addAll(set1);
+        union.addAll(set2);
+        
+        int commonUrls = set1.size() + set2.size() - union.size();
+        
+        if(commonUrls >= urlThreshold) {
+            return 1.0;
+        }
+        
+        return ((double)commonUrls)/urlThreshold;
+        
     }
     
     public static void main(String[] args) {
