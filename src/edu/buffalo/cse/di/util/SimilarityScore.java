@@ -3,8 +3,10 @@
  */
 package edu.buffalo.cse.di.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -56,6 +58,34 @@ public class SimilarityScore {
         int minSize = (set1.size() <= set2.size()) ? set1.size() : set2.size();
         
         return ((double)(set1.size() + set2.size() - union.size()))/minSize;
+    }
+    
+    /**
+     * Given two list of strings as input return the SumSimilarityScore --- Used for determining the heading associated with the entity record ri
+     * @param docHeadList --- Heading of Top K Documents for the entity record ri
+     * @return
+     */
+    public static List<Double> getSumSimilarity(List<String> docHeadList) {
+    	Iterator list1iter = docHeadList.iterator();
+    	Iterator list2iter = null;
+    	double sumSim = 0;
+    	List<Double> sumSimList = new ArrayList<Double>();
+    	while(list1iter.hasNext()) {
+    		String str1 = (String)list1iter.next();
+    		sumSim = 0;
+    		list2iter = docHeadList.iterator();
+    		while(list2iter.hasNext()) {
+    			String str2 = (String)list2iter.next();
+    			if (str1.equals(str2))
+    				continue;
+    			else {
+    				double simH = getJaccardSimilarty(str1, str2);
+        			sumSim = sumSim + simH;
+    			}
+    		}
+    		sumSimList.add(sumSim);
+    	}
+    	return sumSimList;
     }
     
     private static List<String> getTokens(String str) {
