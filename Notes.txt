@@ -5,3 +5,5 @@ TODO:
 4. Handle multiple keywords in search string.
 5. IMP: check with "Jan" regarding Porter Stemmer.
 6. Complete exception Handling. - VERY IMP
+7. Cache/Save the dataset when testing. [Save the search limits for other purposes]
+8. Test with using Stemmer also.

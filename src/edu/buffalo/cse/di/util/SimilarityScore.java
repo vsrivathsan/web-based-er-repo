@@ -109,12 +109,16 @@ public class SimilarityScore {
     public static double simScoreForURLS(List<String> urls1, List<String> urls2, int urlThreshold) {
         
         if(urlThreshold <= 0) {
-            throw new IllegalArgumentException("Invalid urlThreshold value ( =" +urlThreshold + ")");
+            //throw new IllegalArgumentException("Invalid urlThreshold value ( =" +urlThreshold + ")");
+            // TODO log error here
+            return 0.0;
         }
         else if(urlThreshold > urls1.size() || urlThreshold > urls2.size()) {
-            throw new IllegalArgumentException("Required number of common URL's cannot be lesser " +
+            // TODO log error here.
+            /*throw new IllegalArgumentException("Required number of common URL's cannot be lesser " +
             		"than size either url's list ( " + urls1.size() + ", " + urls2.size() + ", "
-            		+ urlThreshold + " )");
+            		+ urlThreshold + " )");*/
+            return 0.0;
         }
         
         Set<String> set1 = new HashSet<String>();

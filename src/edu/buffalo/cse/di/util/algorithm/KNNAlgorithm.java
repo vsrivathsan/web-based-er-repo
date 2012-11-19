@@ -137,7 +137,7 @@ public class KNNAlgorithm {
         // TODO complete this code by calculating jaccard similarity and
         // TODO weight assignment for different attributes in the total similarity.
         // this is a very basic implementation.
-        int urlThreshold = ((node1.getUrls().size() > node2.getUrls().size()) ? node1.getUrls().size() : node2.getUrls().size() ) / 2;
+        int urlThreshold = ((node1.getUrls().size() < node2.getUrls().size()) ? node1.getUrls().size() : node2.getUrls().size() ) / 2;
         
         double titleDistance = SimilarityScore.simScoreForTitles(node1.getTitles(), node2.getTitles());
         double urlsDistance = SimilarityScore.simScoreForURLS(node1.getUrls(), node1.getUrls(), urlThreshold);
