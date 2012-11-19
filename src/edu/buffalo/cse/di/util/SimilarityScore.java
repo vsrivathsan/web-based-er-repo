@@ -69,7 +69,7 @@ public class SimilarityScore {
      * Given two list of strings as input return the the string with Highest SumSimilarityScore --- Used for determining the heading associated with the entity record ri and also for heading of authority file
      * @param headList --- Heading of Top K Documents for the entity record ri
      * @return
-     */
+     */ 
     public static String getMaxSumSimilarity(List<String> headList) {
     	Iterator list1iter = headList.iterator();
     	Iterator list2iter = null;

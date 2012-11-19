@@ -71,9 +71,10 @@ public class GoogleProductSearch extends GoogleSearch {
     /**
      * Returns the list of GoogleProductSearchResults
      * @param query
+     * @param ignoreList
      * @return List<GoogleProductSearchResult> - List of product search results
      */
-    public static List<GoogleProductSearchResult> searchProducts(String query) {
+    public static List<GoogleProductSearchResult> searchProducts(String query, List<String> ignoreList) {
         String content = queryGoogleProductSearch(query);
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON(content);
@@ -82,8 +83,21 @@ public class GoogleProductSearch extends GoogleSearch {
         for(int i=0; i<items.size(); i++) {
             JSONObject item = items.getJSONObject(i);
             JSONObject product = item.getJSONObject("product");
-            GoogleProductSearchResult result = new GoogleProductSearchResult(product.getString("title")); 
-            itemNames.add(result);
+            
+            //Filtered the titles to ignore 
+            String title = product.getString("title");
+            boolean flag = false;
+            for (String ignoreStr: ignoreList) {
+            	if (title.contains(ignoreStr)) {
+            		flag = true;
+            	}	
+            }
+            
+            if (!(flag)) {
+            	GoogleProductSearchResult result = new GoogleProductSearchResult(title); 
+                itemNames.add(result);
+                
+            }
             //String title = 
             //System.out.println(item.get("product"));
             //System.out.println(result);
@@ -93,14 +107,19 @@ public class GoogleProductSearch extends GoogleSearch {
     
     public static void main(String[] args) throws IOException {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");
-        GoogleProductSearch.searchProducts("iphone+4s");
+    	
+    	List<String> ignoreList = new ArrayList<String>();
+    	
+    	ignoreList.add("Case");
+    	ignoreList.add("Stand");
+        GoogleProductSearch.searchProducts("iphone+4s", ignoreList);
         
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
         String line = null;
         List<Node> nodes = new ArrayList<Node>();
         while((line = reader.readLine()) != null) {
             if(!line.equals("")) {
-                List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line);
+                List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line, ignoreList);
                 for(GoogleProductSearchResult result : results) {
                     nodes.add(new Node(result.getTitle()));
                 }
