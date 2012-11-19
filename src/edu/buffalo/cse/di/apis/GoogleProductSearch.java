@@ -17,8 +17,10 @@ import net.sf.json.JSONSerializer;
 
 
 
+import edu.buffalo.cse.di.apis.entity.GoogleCustomSearchResult;
 import edu.buffalo.cse.di.apis.entity.GoogleProductSearchResult;
 import edu.buffalo.cse.di.util.GoogleAPIKey;
+import edu.buffalo.cse.di.util.SimilarityScore;
 import edu.buffalo.cse.di.util.SimilarityScore.SimilarityType;
 import edu.buffalo.cse.di.util.algorithm.KNNAlgorithm;
 import edu.buffalo.cse.di.util.entity.Node;
@@ -31,25 +33,25 @@ import edu.buffalo.cse.di.util.entity.Node;
 public class GoogleProductSearch extends GoogleSearch {
 
     private static final String BASE_URL 
-        = "https://www.googleapis.com/shopping/search/v1/public/products?";
-    
+    = "https://www.googleapis.com/shopping/search/v1/public/products?";
+
     private static final String optionalParms = "&country=US";
     private static final String outputFormat = "&alt=json";
-    
+
     /**
      * Returns the JSONOutput
      * @param searchString
      * @return
      */
     public static String queryGoogleProductSearch(String searchString) {
-        
+
         String completeURL = BASE_URL + "key="+GoogleAPIKey.getGoogleAPIKey() +
                 optionalParms + "&q=" + formatQuery(searchString) + outputFormat;
-        
+
         try {
             InputStream stream = new URL(completeURL).openStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            
+
             String content = "";
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -64,10 +66,10 @@ public class GoogleProductSearch extends GoogleSearch {
             // TODO Add LOG statement here.
             e.printStackTrace();
         }
-        
+
         return null;
     }
-    
+
     /**
      * Returns the list of GoogleProductSearchResults for a query
      * (to support API call for blank ignoreList)
@@ -77,7 +79,7 @@ public class GoogleProductSearch extends GoogleSearch {
     public static List<GoogleProductSearchResult> searchProducts(String query) {
         return searchProducts(query, new ArrayList<String>());
     }
-    
+
     /**
      * Returns the list of GoogleProductSearchResults. <br/>
      * Ignores records if it matches with any word in ignore list.
@@ -94,18 +96,18 @@ public class GoogleProductSearch extends GoogleSearch {
         for(int i=0; i<items.size(); i++) {
             JSONObject item = items.getJSONObject(i);
             JSONObject product = item.getJSONObject("product");
-            
+
             //Filtered the titles to ignore 
             String title = product.getString("title");
             boolean flag = false;
             for (String ignoreStr: ignoreList) {
-            	if (title.toLowerCase().contains(ignoreStr.toLowerCase())) {
-            		flag = true;
-            	}	
+                if (title.toLowerCase().contains(ignoreStr.toLowerCase())) {
+                    flag = true;
+                }	
             }
-            
+
             if (!(flag)) {
-            	GoogleProductSearchResult result = new GoogleProductSearchResult(title); 
+                GoogleProductSearchResult result = new GoogleProductSearchResult(title); 
                 itemNames.add(result);
             }
             //String title = 
@@ -114,16 +116,16 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         return itemNames;
     }
-    
+
     public static void main(String[] args) throws IOException {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");
-    	
-    	List<String> ignoreList = new ArrayList<String>();
-    	
-    	ignoreList.add("Case");
-    	ignoreList.add("Stand");
+
+        List<String> ignoreList = new ArrayList<String>();
+        // TODO test code -- remove.
+        ignoreList.add("Case");
+        ignoreList.add("Stand");
         GoogleProductSearch.searchProducts("iphone+4s", ignoreList);
-        
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
         String line = null;
         List<Node> nodes = new ArrayList<Node>();
@@ -131,12 +133,23 @@ public class GoogleProductSearch extends GoogleSearch {
             if(!line.equals("")) {
                 List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line, ignoreList);
                 for(GoogleProductSearchResult result : results) {
-                    nodes.add(new Node(result.getTitle(),null,null,null,null));
+                    List<GoogleCustomSearchResult> list = GoogleCustomSearch.getItemNames(result.getTitle());
+                    if(list != null) { // Happened for one String.
+                        List<String> titles = new ArrayList<String>(list.size());
+                        List<String> urls = new ArrayList<String>(list.size());
+                        List<String> headings = new ArrayList<String>(list.size());
+                        for(GoogleCustomSearchResult item:list) {
+                            titles.add(item.getTitle());
+                            urls.add(item.getLink());
+                            headings.add(item.getHeading());
+                        }
+                        nodes.add(new Node(result.getTitle(), urls, titles, SimilarityScore.getMaxSumSimilarity(headings), null));
+                    }
                 }
             }
         }
         reader.close();
-        
+
         // TODO Parameters selected below are for test search.
         KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.5);
         List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.CUSTOM);
@@ -144,6 +157,6 @@ public class GoogleProductSearch extends GoogleSearch {
         for(List<Node> cluster: clusters) {
             System.out.println(cluster);
         }
-        
+
     }
 }
