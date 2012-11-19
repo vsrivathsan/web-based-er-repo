@@ -137,14 +137,23 @@ public class KNNAlgorithm {
         // TODO complete this code by calculating jaccard similarity and
         // TODO weight assignment for different attributes in the total similarity.
         // this is a very basic implementation.
-
-        if(type == SimilarityType.JACCARD) {
+        int urlThreshold = ((node1.getUrls().size() > node2.getUrls().size()) ? node1.getUrls().size() : node2.getUrls().size() ) / 2;
+        
+        double titleDistance = SimilarityScore.simScoreForTitles(node1.getTitles(), node2.getTitles());
+        double urlsDistance = SimilarityScore.simScoreForURLS(node1.getUrls(), node1.getUrls(), urlThreshold);
+        double searchStringDistance = SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());
+        //double textDistance = SimilarityScore.getCustomSimilarity(node1.getText(), node2.getText());
+        
+        // Equal ratio initially. Similarity Type doesn't matter now.
+        return 0.33 * ( titleDistance + urlsDistance + searchStringDistance );
+        
+        /*if(type == SimilarityType.JACCARD) {
             return SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());
         }
         else if(type == SimilarityType.CUSTOM) {
             return SimilarityScore.getCustomSimilarity(node1.getString(), node2.getString());
-        }
-        throw new IllegalArgumentException("Invalid SimilarityType argument passed");
+        }*/
+        //throw new IllegalArgumentException("Invalid SimilarityType argument passed");
     }
 
     public List<List<Node>> generateClusters(SimilarityType type) {
