@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
@@ -37,6 +38,7 @@ public class GoogleCustomSearch extends GoogleSearch {
      * @return
      */
     public static String constructURL(String query) {
+        //TODO add / remove hard coding here for testing.
         return ( BASE_URL + "?key=" + GoogleAPIKey.getGoogleAPIKey() 
                 + customSearchEngineRef + "&q=" + formatQuery(query) + outputFormat );
     }
@@ -68,7 +70,14 @@ public class GoogleCustomSearch extends GoogleSearch {
         String content = queryGoogleCustomSearch(query);
 
         JSONObject obj = (JSONObject) JSONSerializer.toJSON(content);
-        JSONArray items = obj.getJSONArray("items");
+        JSONArray items = null;
+        try {
+            items = obj.getJSONArray("items");
+        }
+        catch(JSONException e) {
+            // TODO Add Log statement to capture exception.
+            return null;
+        }
         List<GoogleCustomSearchResult> itemNames = new ArrayList<GoogleCustomSearchResult>();
         for(int i=0; i<items.size(); i++) {
             JSONObject item = items.getJSONObject(i);
@@ -80,7 +89,7 @@ public class GoogleCustomSearch extends GoogleSearch {
             itemNames.add(result);
             //String title = 
             //System.out.println(item.get("product"));
-            System.out.println(result);
+            //System.out.println(result);
         }
         return itemNames;
     }
