@@ -69,7 +69,18 @@ public class GoogleProductSearch extends GoogleSearch {
     }
     
     /**
-     * Returns the list of GoogleProductSearchResults
+     * Returns the list of GoogleProductSearchResults for a query
+     * (to support API call for blank ignoreList)
+     * @param query
+     * @return List<GoogleProductSearchResult> - List of product search results
+     */
+    public static List<GoogleProductSearchResult> searchProducts(String query) {
+        return searchProducts(query, new ArrayList<String>());
+    }
+    
+    /**
+     * Returns the list of GoogleProductSearchResults. <br/>
+     * Ignores records if it matches with any word in ignore list.
      * @param query
      * @param ignoreList
      * @return List<GoogleProductSearchResult> - List of product search results
@@ -88,7 +99,7 @@ public class GoogleProductSearch extends GoogleSearch {
             String title = product.getString("title");
             boolean flag = false;
             for (String ignoreStr: ignoreList) {
-            	if (title.contains(ignoreStr)) {
+            	if (title.toLowerCase().contains(ignoreStr.toLowerCase())) {
             		flag = true;
             	}	
             }
@@ -96,7 +107,6 @@ public class GoogleProductSearch extends GoogleSearch {
             if (!(flag)) {
             	GoogleProductSearchResult result = new GoogleProductSearchResult(title); 
                 itemNames.add(result);
-                
             }
             //String title = 
             //System.out.println(item.get("product"));
