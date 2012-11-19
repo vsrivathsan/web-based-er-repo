@@ -3,7 +3,6 @@
  */
 package edu.buffalo.cse.di.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -71,8 +70,8 @@ public class SimilarityScore {
      * @return
      */ 
     public static String getMaxSumSimilarity(List<String> headList) {
-    	Iterator list1iter = headList.iterator();
-    	Iterator list2iter = null;
+    	Iterator<String> list1iter = headList.iterator();
+    	Iterator<String> list2iter = null;
     	double sumSim = 0;
     	String highSimScoreStr = "";
     	double maxSim = 0;
@@ -82,8 +81,9 @@ public class SimilarityScore {
     		list2iter = headList.iterator();
     		while(list2iter.hasNext()) {
     			String str2 = (String)list2iter.next();
-    			if (str1.equals(str2))
+    			if (str1.equals(str2)) {
     				continue;
+    			}
     			else {
     				double simH = getJaccardSimilarty(str1, str2);
         			sumSim = sumSim + simH;
@@ -92,8 +92,10 @@ public class SimilarityScore {
     		if (sumSim > maxSim) {
     			maxSim = sumSim;
     			highSimScoreStr = str1;
-    		} else
+    		} 
+    		else {
     			continue;
+    		}
     	}
     	return highSimScoreStr;
     }

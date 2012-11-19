@@ -136,7 +136,6 @@ public class GoogleCustomSearch extends GoogleSearch {
             String heading = constructHeading(query, snippet);
             GoogleCustomSearchResult result = new GoogleCustomSearchResult(title, link, snippet, heading);
             itemNames.add(result);
-            //String title = 
             //System.out.println(item.get("product"));
             //System.out.println(result);
         }
@@ -146,18 +145,18 @@ public class GoogleCustomSearch extends GoogleSearch {
     public static String constructHeading(String epr, String snippet) {
         String heading = "";
         List<String> phraseList = Arrays.asList(snippet.split("[,.;:-]"));
-        SimilarityScore simScore = new SimilarityScore();
-        Iterator phraseListIter = phraseList.iterator();
+        Iterator<String> phraseListIter = phraseList.iterator();
         double highScore = 0;
         while (phraseListIter.hasNext()) {
             String phrase = (String)phraseListIter.next();
-            double curScore = simScore.getJaccardSimilarty(epr, phrase);
+            double curScore = SimilarityScore.getJaccardSimilarty(epr, phrase);
             if (curScore > highScore) {
                 highScore = curScore;
                 heading = phrase;
             }
-            else
+            else {
                 continue;
+            }
         }
         return heading;
     }
