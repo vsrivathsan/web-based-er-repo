@@ -111,9 +111,10 @@ public class SimilarityScore {
         if(urlThreshold <= 0) {
             throw new IllegalArgumentException("Invalid urlThreshold value ( =" +urlThreshold + ")");
         }
-        else if(urlThreshold < urls1.size() || urlThreshold < urls2.size()) {
-            throw new IllegalArgumentException("Required number of common URL's cannot be lesser" +
-            		"than size either url's list");
+        else if(urlThreshold > urls1.size() || urlThreshold > urls2.size()) {
+            throw new IllegalArgumentException("Required number of common URL's cannot be lesser " +
+            		"than size either url's list ( " + urls1.size() + ", " + urls2.size() + ", "
+            		+ urlThreshold + " )");
         }
         
         Set<String> set1 = new HashSet<String>();
