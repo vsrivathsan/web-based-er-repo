@@ -17,6 +17,7 @@ public class Node {
     private final List<String> titles;
     private final String header;
     private final String text;
+    private String label = ""; // attribute added for metrics convenience
 
     /**
      * Create a Node object
@@ -49,6 +50,26 @@ public class Node {
         this.titles = titles;
         this.header = header;
         this.text = text;
+    }
+    
+    /**
+     * Code for metrics calculation convenience
+     * @param string
+     * @param urls
+     * @param titles
+     * @param header
+     * @param text
+     * @param label
+     */
+    public Node(String string, List<String> urls, List<String> titles,
+            String header, String text, String label) {
+        this(string, urls, titles, header, text);
+        this.label = label;
+    }
+
+    // Added for convenience; Not required for actual project.
+    public String getLabel() {
+        return label;
     }
 
     public String getString() {

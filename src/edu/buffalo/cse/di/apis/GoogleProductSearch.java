@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -136,6 +137,30 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         return null;
     }
+    
+    /**
+     * This Method add's an additional functionality to automatically 
+     * calculate metrics over the existing implmentation present in 
+     * getNodesForProductSearch(GoogleProductSearchResult request)
+     * @param request
+     * @return Node
+     */
+    public static Node getNodesForProductSearchModified(GoogleProductSearchResult request ) {
+        String[] params = request.getTitle().split(";;");
+        List<GoogleCustomSearchResult> list = GoogleCustomSearch.getItemNames(params[1]);
+        if(list != null) { // Happened for one String.
+            List<String> titles = new ArrayList<String>(list.size());
+            List<String> urls = new ArrayList<String>(list.size());
+            List<String> headings = new ArrayList<String>(list.size());
+            for(GoogleCustomSearchResult item:list) {
+                titles.add(item.getTitle());
+                urls.add(item.getLink());
+                headings.add(item.getHeading());
+            }
+            return new Node(params[1], urls, titles, SimilarityScore.getMaxSumSimilarity(headings), null, params[0]);
+        }
+        return null;
+    }
 
     /**
      * Wrapper for the Algorithm when the product names are directly available.
@@ -159,12 +184,13 @@ public class GoogleProductSearch extends GoogleSearch {
 
         List<Node> nodes = new ArrayList<Node>();
         for(GoogleProductSearchResult item: data) {
-            Node node = getNodesForProductSearch(item);
+         // Modified for calculation of classification rate.
+            Node node = getNodesForProductSearchModified(item); 
             if(node != null) {
                 nodes.add(node);
             }
         }
-
+        System.out.println(nodes.size());
         KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.4);
         List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.CUSTOM);
         System.out.println(clusters.size());
@@ -176,8 +202,10 @@ public class GoogleProductSearch extends GoogleSearch {
 
     public static void main(String[] args) throws IOException {
         //actualTest("MobilePhonesFiltered.txt");
-        String[] ignoreList = new String[] {"case","Charger"};
-        testData(Arrays.asList(ignoreList));
+        actualTestModified("MobilePhonesWithLabels.txt");
+        //String[] ignoreList = new String[] {"case","Charger"};
+        //testData(Arrays.asList(ignoreList));
+        
     }
 
     public static void actualTest(String fileName) throws IOException {
@@ -191,6 +219,49 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         reader.close();
         runAlgorithmforStrings(productTitles);
+    }
+    
+    /**
+     * Automation of classification rate calculation
+     * @param fileName
+     * @throws IOException
+     */
+    public static void actualTestModified(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+        String line = null;
+        List<String> productTitles = new ArrayList<String>();
+        while((line = reader.readLine()) != null) {
+            if(!line.equals("")) {
+                productTitles.add(line);
+            }
+        }
+        reader.close();
+        List<List<Node>> clusters = runAlgorithmforStrings(productTitles);
+        calculateClassificationRate(clusters);
+    }
+    
+    public static void calculateClassificationRate(List<List<Node>> clusters) {
+        int totalRecords = 0;
+        int correctClassified = 0;
+        for(List<Node> cluster: clusters) {
+            HashMap<String,Integer> counts = new HashMap<String, Integer>();
+            int maxCount = 0;
+            int totalCount = cluster.size();
+            for(Node node: cluster) {
+                int count = 0;
+                if(counts.containsKey(node.getLabel())) {
+                    count = counts.get(node.getLabel());
+                }
+                count += 1;
+                counts.put(node.getLabel(), count);
+                if(maxCount <= count) {
+                    maxCount = count;
+                }
+            }
+            totalRecords += totalCount;
+            correctClassified += maxCount;
+        }
+        System.out.println("(Total Nodes, Correct Classified = (" + totalRecords + ", " + correctClassified + ")");
     }
     
     public static void testData(List<String> ignoreList) throws IOException {
