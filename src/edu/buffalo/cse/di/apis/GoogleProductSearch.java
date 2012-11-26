@@ -99,10 +99,12 @@ public class GoogleProductSearch extends GoogleSearch {
             //Filtered the titles to ignore 
             String title = product.getString("title");
             boolean flag = false;
-            for (String ignoreStr: ignoreList) {
-                if (title.toLowerCase().contains(ignoreStr.toLowerCase())) {
-                    flag = true;
-                }	
+            if(ignoreList != null && ignoreList.size() != 0) {
+                for (String ignoreStr: ignoreList) {
+                    if (title.toLowerCase().contains(ignoreStr.toLowerCase())) {
+                        flag = true;
+                    }	
+                }
             }
 
             if (!(flag)) {
@@ -123,7 +125,7 @@ public class GoogleProductSearch extends GoogleSearch {
         // TODO test code -- remove.
         ignoreList.add("Case");
         ignoreList.add("Stand");
-        GoogleProductSearch.searchProducts("iphone+4s", ignoreList);
+        //GoogleProductSearch.searchProducts("iphone+4s", ignoreList);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
         String line = null;
