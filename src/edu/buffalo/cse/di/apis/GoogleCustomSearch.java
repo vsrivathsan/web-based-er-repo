@@ -40,6 +40,7 @@ public class GoogleCustomSearch extends GoogleSearch {
     private static final String outputFormat = "&alt=json";
     private static final String customSearchEngineRef = "&cx=001411437529243436513:yxjsvl3ddv4";
 
+    private static String googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey("sravanreddy001");
     /**
      * Construct the URL that can query against the google API.
      * @param query
@@ -47,7 +48,7 @@ public class GoogleCustomSearch extends GoogleSearch {
      */
     public static String constructURL(String query) {
         //TODO add / remove hard coding here for testing.
-        return ( BASE_URL + "?key=" + GoogleAPIKey.getGoogleAPIKey() 
+        return ( BASE_URL + "?key=" + googleSearchAPIKey 
                 + customSearchEngineRef + "&q=" + formatQuery(query) + outputFormat );
     }
 

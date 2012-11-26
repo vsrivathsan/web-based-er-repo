@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -118,46 +120,94 @@ public class GoogleProductSearch extends GoogleSearch {
         return itemNames;
     }
 
-    public static void main(String[] args) throws IOException {
-        //GoogleProductSearch.queryGoogleProductSearch("iphone");
+    public static Node getNodesForProductSearch(GoogleProductSearchResult request ) {
 
-        List<String> ignoreList = new ArrayList<String>();
-        // TODO test code -- remove.
-        ignoreList.add("Case");
-        ignoreList.add("Stand");
-        //GoogleProductSearch.searchProducts("iphone+4s", ignoreList);
+        List<GoogleCustomSearchResult> list = GoogleCustomSearch.getItemNames(request.getTitle());
+        if(list != null) { // Happened for one String.
+            List<String> titles = new ArrayList<String>(list.size());
+            List<String> urls = new ArrayList<String>(list.size());
+            List<String> headings = new ArrayList<String>(list.size());
+            for(GoogleCustomSearchResult item:list) {
+                titles.add(item.getTitle());
+                urls.add(item.getLink());
+                headings.add(item.getHeading());
+            }
+            return new Node(request.getTitle(), urls, titles, SimilarityScore.getMaxSumSimilarity(headings), null);
+        }
+        return null;
+    }
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
-        String line = null;
+    /**
+     * Wrapper for the Algorithm when the product names are directly available.
+     * @param data
+     * @return 
+     */
+    public static List<List<Node>> runAlgorithmforStrings(List<String> data) {
+        List<GoogleProductSearchResult> results = new ArrayList<GoogleProductSearchResult>(data.size());
+        for(String item: data) {
+            results.add(new GoogleProductSearchResult(item));
+        }
+        return runAlgorithm(results);
+    }
+
+    /**
+     * Runs the algorithm and returns the clusters.
+     * @param data
+     * @return 
+     */
+    public static List<List<Node>> runAlgorithm(List<GoogleProductSearchResult> data) {
+
         List<Node> nodes = new ArrayList<Node>();
-        while((line = reader.readLine()) != null) {
-            if(!line.equals("")) {
-                List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line, ignoreList);
-                for(GoogleProductSearchResult result : results) {
-                    List<GoogleCustomSearchResult> list = GoogleCustomSearch.getItemNames(result.getTitle());
-                    if(list != null) { // Happened for one String.
-                        List<String> titles = new ArrayList<String>(list.size());
-                        List<String> urls = new ArrayList<String>(list.size());
-                        List<String> headings = new ArrayList<String>(list.size());
-                        for(GoogleCustomSearchResult item:list) {
-                            titles.add(item.getTitle());
-                            urls.add(item.getLink());
-                            headings.add(item.getHeading());
-                        }
-                        nodes.add(new Node(result.getTitle(), urls, titles, SimilarityScore.getMaxSumSimilarity(headings), null));
-                    }
-                }
+        for(GoogleProductSearchResult item: data) {
+            Node node = getNodesForProductSearch(item);
+            if(node != null) {
+                nodes.add(node);
             }
         }
-        reader.close();
 
-        // TODO Parameters selected below are for test search.
-        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.5);
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.4);
         List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.CUSTOM);
         System.out.println(clusters.size());
         for(List<Node> cluster: clusters) {
             System.out.println(cluster);
         }
+        return clusters;
+    }
 
+    public static void main(String[] args) throws IOException {
+        //actualTest("MobilePhonesFiltered.txt");
+        String[] ignoreList = new String[] {"case","Charger"};
+        testData(Arrays.asList(ignoreList));
+    }
+
+    public static void actualTest(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+        String line = null;
+        List<String> productTitles = new ArrayList<String>();
+        while((line = reader.readLine()) != null) {
+            if(!line.equals("")) {
+                productTitles.add(line);
+            }
+        }
+        reader.close();
+        runAlgorithmforStrings(productTitles);
+    }
+    
+    public static void testData(List<String> ignoreList) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("MobilePhonesSample.txt")));
+        String line = null;
+        while((line = reader.readLine()) != null) {
+            if(!line.equals("")) {
+                System.out.println("---------------------------------------------------------------");
+                System.out.println(line);
+                System.out.println("---------------------------------------------------------------");
+                List<GoogleProductSearchResult> results = GoogleProductSearch.searchProducts(line, ignoreList);
+                for(GoogleProductSearchResult result : results) {
+                    System.out.println(result.getTitle());
+                }
+            }
+        }
+        reader.close();
     }
 }

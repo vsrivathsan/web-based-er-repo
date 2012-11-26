@@ -73,8 +73,10 @@ public class Node {
 
     @Override
     public String toString() {
-        return "Node [string=" + string + ", urls=" + urls + ", titles="
-                + titles + ", header=" + header + ", text=" + text + "]";
+        //TODO temp fix
+        return string+"\n";
+        /*return "Node [string=" + string + ", urls=" + urls + ", titles="
+                + titles + ", header=" + header + ", text=" + text + "]";*/
     }
 
 }
