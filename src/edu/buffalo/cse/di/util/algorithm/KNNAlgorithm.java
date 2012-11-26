@@ -28,6 +28,8 @@ public class KNNAlgorithm {
     private Map<Node, PriorityQueue<NodeDistance>> nodeDistances = 
             new HashMap<Node, PriorityQueue<NodeDistance>>();
     
+    int[] array;
+    
     private class NodeDistance {
         int nodeId;
         double distance;
@@ -160,7 +162,7 @@ public class KNNAlgorithm {
         
         evaluateDistances(type); // Evaluate distances
         
-        int array[] = new int[nodes.size()];
+        array = new int[nodes.size()];
         for(int i = 0; i<array.length; i++) {
             array[i] = 0;
         }
@@ -183,6 +185,9 @@ public class KNNAlgorithm {
         List<Node> returnList = new ArrayList<Node>();
         while ( !queue.isEmpty() ) {
             Node firstNode = queue.removeFirst();
+            if(array[nodes.indexOf(firstNode)] == 1) { // Already added to cluster
+                continue;
+            }
             returnList.add(firstNode);
             PriorityQueue<NodeDistance> nearNodes = nodeDistances.get(node);
             for(int i=0; i<kValue && !nearNodes.isEmpty(); i++) {
