@@ -56,7 +56,7 @@ public class GoogleCustomSearch extends GoogleSearch {
         // TODO Caching the results. Due to google search Limitation.
         File file = null;
         try {
-            file = new File("productSearh/" + SecurityUtil.generateSHA1Hash(query));
+            file = new File("productSearch/" + SecurityUtil.generateSHA1Hash(query));
         } catch (NoSuchAlgorithmException e2) {
             // TODO Add LOG statement here.
             // TODO algorithm not found.
