@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,7 +27,6 @@ import edu.buffalo.cse.di.util.entity.Node;
 
 /**
  * Class to search against the google products using google product SearchAPI
- * 
  * @author sravanku@buffalo.edu
  */
 public class GoogleProductSearch extends GoogleSearch {
@@ -190,13 +187,30 @@ public class GoogleProductSearch extends GoogleSearch {
                 nodes.add(node);
             }
         }
+        //Stage 1:
         System.out.println(nodes.size());
-        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.4);
-        List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.CUSTOM);
-        System.out.println(clusters.size());
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 5, 0.35);
+        List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.JACCARD);
+        System.out.println("Step 1:" + clusters.size());
+        
+        
         for(List<Node> cluster: clusters) {
+            //System.out.println(cluster);
+            //System.out.println(SimilarityScore.getBestNodeForCluster(cluster));
+        }
+        
+        //Step 2:
+        List<Node> headerNodes = new ArrayList<Node>();
+        for(List<Node> cluster: clusters) {
+            headerNodes.add(SimilarityScore.getBestNodeForCluster(cluster));
+        }
+        KNNAlgorithm algorithm1 = new KNNAlgorithm(nodes, 2, 0.3);
+        List<List<Node>> clusters1 = algorithm1.generateClusters(SimilarityType.JACCARD);
+        System.out.println("Step 2:" + clusters1.size());
+        for(List<Node> cluster: clusters1) {
             System.out.println(cluster);
         }
+        
         return clusters;
     }
 
@@ -205,7 +219,6 @@ public class GoogleProductSearch extends GoogleSearch {
         actualTestModified("MobilePhonesWithLabels.txt");
         //String[] ignoreList = new String[] {"case","Charger"};
         //testData(Arrays.asList(ignoreList));
-        
     }
 
     public static void actualTest(String fileName) throws IOException {

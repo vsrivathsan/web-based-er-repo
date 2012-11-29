@@ -135,7 +135,7 @@ public class KNNAlgorithm {
         }
     }
     
-    public double getDistanceBetweenNodes(Node node1, Node node2, SimilarityType type) {
+    public static double getDistanceBetweenNodes(Node node1, Node node2, SimilarityType type) {
         // TODO complete this code by calculating jaccard similarity and
         // TODO weight assignment for different attributes in the total similarity.
         // this is a very basic implementation.
@@ -147,7 +147,8 @@ public class KNNAlgorithm {
         //double textDistance = SimilarityScore.getCustomSimilarity(node1.getText(), node2.getText());
         
         // Equal ratio initially. Similarity Type doesn't matter now.
-        return 0.33 * ( titleDistance + urlsDistance + searchStringDistance );
+        // Return 0.33 * ( titleDistance + urlsDistance + searchStringDistance );
+        return 0.4 * titleDistance + 0.2 * urlsDistance + 0.4 * searchStringDistance;
         
         /*if(type == SimilarityType.JACCARD) {
             return SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());
