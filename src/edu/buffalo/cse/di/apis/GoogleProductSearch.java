@@ -189,18 +189,18 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         //Stage 1:
         System.out.println(nodes.size());
-        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 5, 0.35);
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.4);
         List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.JACCARD);
         System.out.println("Step 1:" + clusters.size());
         
         
         for(List<Node> cluster: clusters) {
-            //System.out.println(cluster);
+            System.out.println(cluster);
             //System.out.println(SimilarityScore.getBestNodeForCluster(cluster));
         }
         
         //Step 2:
-        List<Node> headerNodes = new ArrayList<Node>();
+        /*List<Node> headerNodes = new ArrayList<Node>();
         for(List<Node> cluster: clusters) {
             headerNodes.add(SimilarityScore.getBestNodeForCluster(cluster));
         }
@@ -209,10 +209,11 @@ public class GoogleProductSearch extends GoogleSearch {
         System.out.println("Step 2:" + clusters1.size());
         for(List<Node> cluster: clusters1) {
             System.out.println(cluster);
-        }
+        }*/
         
         return clusters;
     }
+
 
     public static void main(String[] args) throws IOException {
         //actualTest("MobilePhonesFiltered.txt");
@@ -220,6 +221,7 @@ public class GoogleProductSearch extends GoogleSearch {
         //String[] ignoreList = new String[] {"case","Charger"};
         //testData(Arrays.asList(ignoreList));
     }
+
 
     public static void actualTest(String fileName) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
@@ -239,13 +241,15 @@ public class GoogleProductSearch extends GoogleSearch {
      * @param fileName
      * @throws IOException
      */
+
     public static void actualTestModified(String fileName) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
         String line = null;
         List<String> productTitles = new ArrayList<String>();
         while((line = reader.readLine()) != null) {
             if(!line.equals("")) {
-                productTitles.add(line);
+                if(line.length() < 85)
+                    productTitles.add(line);
             }
         }
         reader.close();
@@ -294,4 +298,5 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         reader.close();
     }
+
 }
