@@ -233,21 +233,28 @@ public class GoogleProductSearch extends GoogleSearch {
             headerNodes.add(SimilarityScore.getBestNodeForCluster(cluster));
         }
         
-        SimilarityScore simScore = new SimilarityScore();
+        //SimilarityScore simScore = new SimilarityScore();
         for(List<Node> minCluster: minClusters) {
         	for(Node minNode: minCluster) {
         		String minNodeName = minNode.getString();
         		List<Node> minNodeNearestClstr = null;
         		Node minNodeNearestNode = null;
-        		double maxSimScore = 0.0;
+        		double minDist = 0.0;
         		int index = 0;
         		int count = 0;
         		for(Node headerNode: headerNodes) {
-        			double curSimScore = simScore.getJaccardSimilarty(minNodeName, headerNode.getString());
-        			if ((curSimScore > maxSimScore) && (curSimScore > threshold)) {
-        				maxSimScore = curSimScore;
+        			//double curSimScore = simScore.getJaccardSimilarty(minNodeName, headerNode.getString());
+        			double curDist = KNNAlgorithm.getDistanceBetweenNodes(headerNode, minNode, SimilarityType.JACCARD);
+        			if (minDist == 0.0) {
+        				minDist = curDist;
         				minNodeNearestNode = headerNode;
         				index = count;
+        			} else {
+        				if ((curDist > minDist) && (curDist > threshold)) {
+            				minDist = curDist;
+            				minNodeNearestNode = headerNode;
+            				index = count;
+            			}
         			}
         			count++;
         		}
