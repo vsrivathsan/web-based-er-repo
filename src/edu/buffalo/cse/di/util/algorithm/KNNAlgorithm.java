@@ -103,7 +103,7 @@ public class KNNAlgorithm {
     
     
     public KNNAlgorithm(List<Node> nodes, int kValue) {
-        this(nodes, kValue, 0.7);
+        this(nodes, kValue, 0.5);
     }
     
     public KNNAlgorithm(List<Node> nodes, int kValue,double threshold) {
@@ -135,19 +135,25 @@ public class KNNAlgorithm {
         }
     }
     
-    public double getDistanceBetweenNodes(Node node1, Node node2, SimilarityType type) {
+    public static double getDistanceBetweenNodes(Node node1, Node node2, SimilarityType type) {
         // TODO complete this code by calculating jaccard similarity and
         // TODO weight assignment for different attributes in the total similarity.
         // this is a very basic implementation.
         int urlThreshold = ((node1.getUrls().size() < node2.getUrls().size()) ? node1.getUrls().size() : node2.getUrls().size() ) / 2;
         
         double titleDistance = SimilarityScore.simScoreForTitles(node1.getTitles(), node2.getTitles());
-        double urlsDistance = SimilarityScore.simScoreForURLS(node1.getUrls(), node1.getUrls(), urlThreshold);
+        double urlsDistance = SimilarityScore.simScoreForURLS(node1.getUrls(), node2.getUrls(), urlThreshold);
         double searchStringDistance = SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());
         //double textDistance = SimilarityScore.getCustomSimilarity(node1.getText(), node2.getText());
         
         // Equal ratio initially. Similarity Type doesn't matter now.
-        return 0.33 * ( titleDistance + urlsDistance + searchStringDistance );
+        //return 0.33 * ( titleDistance + urlsDistance + searchStringDistance );
+        
+        //return 0.2 * titleDistance + 0.2 * urlsDistance + 0.6 * searchStringDistance;
+        
+        //System.out.println("(" + titleDistance + ", " + urlsDistance + ", " + searchStringDistance +") -- " + node1.getString() + " -- " + node2.getString());
+        return 0.5 * titleDistance + 0.5 * urlsDistance;
+        //return searchStringDistance;
         
         /*if(type == SimilarityType.JACCARD) {
             return SimilarityScore.getJaccardSimilarty(node1.getString(), node2.getString());

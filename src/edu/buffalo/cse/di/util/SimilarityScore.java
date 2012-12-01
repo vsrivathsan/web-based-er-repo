@@ -3,11 +3,15 @@
  */
 package edu.buffalo.cse.di.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import edu.buffalo.cse.di.util.algorithm.KNNAlgorithm;
+import edu.buffalo.cse.di.util.entity.Node;
 
 /**
  * Calculate the metrics related to Jaccard coefficient.
@@ -64,6 +68,25 @@ public class SimilarityScore {
         return ((double)(set1.size() + set2.size() - union.size()))/minSize;
     }
     
+    public static Node getBestNodeForCluster(List<Node> cluster) {
+        double[] sumScores = new double[cluster.size()];
+        for(int i=0;i < cluster.size(); i++) {
+            for(int j=0; (j < cluster.size()) && (i != j); j++) {
+                sumScores[i] += KNNAlgorithm.getDistanceBetweenNodes(cluster.get(i), cluster.get(i), null);
+            }
+        }
+        double topScore = 0.0;
+        int index = 0;
+        for(int i=0;i<sumScores.length; i++) {
+            if(topScore < sumScores[i]) {
+                topScore = sumScores[i];
+                index = i;
+            }
+        }
+        return cluster.get(index);
+        
+    }
+    
     /**
      * Given two list of strings as input return the the string with Highest SumSimilarityScore --- Used for determining the heading associated with the entity record ri and also for heading of authority file
      * @param headList --- Heading of Top K Documents for the entity record ri
@@ -101,11 +124,29 @@ public class SimilarityScore {
     }
     
     private static List<String> getTokens(String str) {
-        return Arrays.asList(str.toLowerCase().split("[; ,]"));
+        String[] tokens = str.toLowerCase().split("[~`!@#$%^&()_-|{}][;:,' ,]");
+        List<String> list = new ArrayList<String>();
+        for(int i=0;i<tokens.length; i++) {
+            if(tokens[i].length() > 1) {
+                list.add(tokens[i]);
+            }
+        }
+        return list;
     }
     
     public static double simScoreForTitles(List<String> titles1, List<String> titles2) {
-        return getJaccardSimilartyForTokens(titles1, titles2);
+        List<String> titlesTokens1 = new ArrayList<String>();
+        List<String> titlesTokens2 = new ArrayList<String>();
+        
+        for(String title:titles1) {
+            titlesTokens1.addAll(getTokens(title));
+        }
+        
+        for(String title:titles2) {
+            titlesTokens2.addAll(getTokens(title));
+        }
+        
+        return getJaccardSimilartyForTokens(titlesTokens1, titlesTokens2);
     }
 
     public static double simScoreForURLS(List<String> urls1, List<String> urls2, int urlThreshold) {

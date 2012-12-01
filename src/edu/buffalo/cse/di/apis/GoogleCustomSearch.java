@@ -40,7 +40,7 @@ public class GoogleCustomSearch extends GoogleSearch {
     private static final String outputFormat = "&alt=json";
     private static final String customSearchEngineRef = "&cx=001411437529243436513:yxjsvl3ddv4";
 
-    private static String googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey("sravanreddy001");
+    private static String googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey("sudheesh88");
     /**
      * Construct the URL that can query against the google API.
      * @param query
@@ -64,12 +64,12 @@ public class GoogleCustomSearch extends GoogleSearch {
             return null;
         }
         if(!file.exists()) {
-            try {
+            /*try {
                 file.createNewFile();
             } catch (IOException e1) {
                 // TODO Add LOG statement here.
                 e1.printStackTrace();
-            }
+            }*/
             try {
                 InputStream stream = new URL(constructURL(query)).openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -162,9 +162,9 @@ public class GoogleCustomSearch extends GoogleSearch {
         return heading;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         //GoogleProductSearch.queryGoogleProductSearch("iphone");
         GoogleCustomSearch.getItemNames("iphone+4s");
-    }
+    }*/
 
 }
