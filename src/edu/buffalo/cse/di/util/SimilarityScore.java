@@ -72,7 +72,7 @@ public class SimilarityScore {
         double[] sumScores = new double[cluster.size()];
         for(int i=0;i < cluster.size(); i++) {
             for(int j=0; (j < cluster.size()) && (i != j); j++) {
-                sumScores[i] += KNNAlgorithm.getDistanceBetweenNodes(cluster.get(i), cluster.get(i), null);
+                sumScores[i] += KNNAlgorithm.getDistanceBetweenNodes(cluster.get(i), cluster.get(j), null);
             }
         }
         double topScore = 0.0;
