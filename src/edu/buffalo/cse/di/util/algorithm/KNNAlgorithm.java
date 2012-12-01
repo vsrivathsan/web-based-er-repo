@@ -152,7 +152,7 @@ public class KNNAlgorithm {
         //return 0.2 * titleDistance + 0.2 * urlsDistance + 0.6 * searchStringDistance;
         
         //System.out.println("(" + titleDistance + ", " + urlsDistance + ", " + searchStringDistance +") -- " + node1.getString() + " -- " + node2.getString());
-        return 0.5 * titleDistance + 0.5 * urlsDistance;
+        return 0.4 * titleDistance + 0.4 * urlsDistance + 0.2 * searchStringDistance;
         //return searchStringDistance;
         
         /*if(type == SimilarityType.JACCARD) {
