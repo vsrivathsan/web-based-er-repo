@@ -40,7 +40,7 @@ public class GoogleCustomSearch extends GoogleSearch {
     private static final String outputFormat = "&alt=json";
     private static final String customSearchEngineRef = "&cx=001411437529243436513:yxjsvl3ddv4";
 
-    private static String googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey("sudheesh88");
+    private static String googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey();
     /**
      * Construct the URL that can query against the google API.
      * @param query
@@ -125,7 +125,18 @@ public class GoogleCustomSearch extends GoogleSearch {
             items = obj.getJSONArray("items");
         }
         catch(JSONException e) {
-            // TODO Add Log statement to capture exception.
+            // On error get another key.
+            googleSearchAPIKey = GoogleAPIKey.getGoogleAPIKey();
+            content = queryGoogleCustomSearch(query);
+
+            obj = (JSONObject) JSONSerializer.toJSON(content);
+            items = null;
+            try {
+                items = obj.getJSONArray("items");
+            }
+            catch(JSONException x) {
+                return null;
+            }
             return null;
         }
         List<GoogleCustomSearchResult> itemNames = new ArrayList<GoogleCustomSearchResult>();
