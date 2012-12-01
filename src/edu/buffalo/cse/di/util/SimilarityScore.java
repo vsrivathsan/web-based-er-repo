@@ -185,9 +185,9 @@ public class SimilarityScore {
     
     public static void main(String[] args) {
         //System.out.println(getTokens("Helo man,world;how,are;you"));
-        System.out.println(getJaccardSimilarty("Apple iPhone 4S - 16 GB - Black",
-                "Apple iPhone 4S 32 GB black GSM unlock"));
-        System.out.println(getCustomSimilarity("Apple iPhone 4S - 16 GB - Black",
-                "Apple iPhone 4S 32 GB black GSM unlock"));
+        System.out.println(getJaccardSimilarty("Samsung Galaxy Note",
+                "Samsung Galaxy Note - Carbon Blue Smartphone"));
+        /*System.out.println(getCustomSimilarity("Apple iPhone 4S - 16 GB - Black",
+                "Apple iPhone 4S 32 GB black GSM unlock"));*/
     }
 }

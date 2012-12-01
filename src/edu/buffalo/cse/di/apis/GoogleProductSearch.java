@@ -189,15 +189,17 @@ public class GoogleProductSearch extends GoogleSearch {
         }
         //Stage 1:
         System.out.println(nodes.size());
-        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 3, 0.4);
+        KNNAlgorithm algorithm = new KNNAlgorithm(nodes, 5, 0.15);
         List<List<Node>> clusters = algorithm.generateClusters(SimilarityType.JACCARD);
-        System.out.println("Step 1:" + clusters.size());
+        System.out.println("Step 1: UnMerged Clusters: " + clusters.size());
         
+        List<List<Node>> mergedClusters = getMergedClusters(clusters,0.0);
         
-        for(List<Node> cluster: clusters) {
+        System.out.println("Step 2: Merged Clusters: " + mergedClusters.size());
+        /*for(List<Node> cluster: mergedClusters) {
             System.out.println(cluster);
             //System.out.println(SimilarityScore.getBestNodeForCluster(cluster));
-        }
+        }*/
         
         //Step 2:
         /*List<Node> headerNodes = new ArrayList<Node>();
@@ -212,6 +214,58 @@ public class GoogleProductSearch extends GoogleSearch {
         }*/
         
         return clusters;
+    }
+    
+    public static List<List<Node>> getMergedClusters(List<List<Node>> clusters, double threshold) {
+    	List<List<Node>> minClusters = new ArrayList<List<Node>>();
+    	List<List<Node>> maxClusters = new ArrayList<List<Node>>();
+    	List<Node> unClassifiedCluster = new ArrayList<Node>();
+    	
+    	for(List<Node> cluster: clusters) {
+    		if (cluster.size() < 3) 
+    			minClusters.add(cluster);
+    		else
+    			maxClusters.add(cluster);
+    	}
+    	
+    	List<Node> headerNodes = new ArrayList<Node>();
+        for(List<Node> cluster: maxClusters) {
+            headerNodes.add(SimilarityScore.getBestNodeForCluster(cluster));
+        }
+        
+        SimilarityScore simScore = new SimilarityScore();
+        for(List<Node> minCluster: minClusters) {
+        	for(Node minNode: minCluster) {
+        		String minNodeName = minNode.getString();
+        		List<Node> minNodeNearestClstr = null;
+        		Node minNodeNearestNode = null;
+        		double maxSimScore = 0.0;
+        		int index = 0;
+        		int count = 0;
+        		for(Node headerNode: headerNodes) {
+        			double curSimScore = simScore.getJaccardSimilarty(minNodeName, headerNode.getString());
+        			if ((curSimScore > maxSimScore) && (curSimScore > threshold)) {
+        				maxSimScore = curSimScore;
+        				minNodeNearestNode = headerNode;
+        				index = count;
+        			}
+        			count++;
+        		}
+        		
+        		if (minNodeNearestNode != null) {
+        			maxClusters.get(index).add(minNode);
+        			//maxClusters.remove(index);
+        			//cluster.add(minNode);
+        			System.out.println(minNodeNearestNode + "---> " + minNode);
+        			//maxClusters.add(cluster);
+        		} else {
+        			unClassifiedCluster.add(minNode);
+        		}
+        	}
+        }
+        
+        maxClusters.add(unClassifiedCluster);
+        return maxClusters;
     }
 
 
